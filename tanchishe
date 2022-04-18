@@ -1,0 +1,196 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<conio.h>
+#include<windows.h>
+#define high 20
+#define width 30
+ 
+int a[high][width]={0};
+int move;
+int food_x,food_y;
+void gotoxy(int x,int y)
+{
+	HANDLE handle=GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD pos;
+	pos.X=x;
+	pos.Y=y;
+	SetConsoleCursorPosition(handle,pos);
+}
+
+void moveSnakeByDirection()
+{
+	int i,j,sum=0;
+	for(i=1;i<high-1;i++)
+	{
+	for(j=1;j<width-1;j++)
+	{
+		if(a[i][j]>0)
+			a[i][j]++;
+	}
+	}
+	int oldtail_i,oldtail_j,oldhead_i,oldhead_j;
+	int max=0;
+	for(i=1;i<high-1;i++)
+	{
+	for(j=1;j<width-1;j++)
+	{
+		if(a[i][j]>0)
+		{
+			if(max<a[i][j])
+			{
+				max=a[i][j];
+				oldtail_i=i;
+				oldtail_j=j;
+			}
+			if(a[i][j]==2)
+			{
+				oldhead_i=i;
+				oldhead_j=j;
+			}
+		}
+	}
+	}
+			 
+			
+			 int newhead_i,newhead_j;
+			 if(move==1)
+			 {
+				 newhead_i=oldhead_i-1;
+				 newhead_j=oldhead_j;
+			 }
+			  if(move==2)
+				{
+				 newhead_i=oldhead_i+1;
+				 newhead_j=oldhead_j;
+			 }
+			  if(move==3)
+				{
+				 newhead_i=oldhead_i;
+				 newhead_j=oldhead_j-1;
+			 }
+				  
+			  if(move==4)
+				  {
+				 newhead_i=oldhead_i;
+				 newhead_j=oldhead_j+1;
+			 }
+			  if(a[newhead_i][newhead_j]==-2)
+			  {
+				  a[food_x][food_y]=0;
+				  food_x=rand()%(high-5)+2;
+				  food_y=rand()%(width-5)+2;
+				  a[food_x][food_y]=-2;
+				  sum+=1;
+			  }
+			  else
+			  {
+				  a[oldtail_i][oldtail_j]=0;
+			  }
+		if(a[newhead_i][newhead_j]>0|a[newhead_i][newhead_j]==-1)
+		{
+			printf("游戏失败\n");
+			printf("您的得分为%d",sum);
+		exit(0);
+		}
+		else{
+			a[newhead_i][newhead_j]=1;
+		}
+}
+	
+	
+
+
+
+void startup()
+{
+	int i ,j;
+	for(i=0;i<high;i++)
+	{
+		a[i][0]=-1;
+		a[i][width-1]=-1;
+	}
+	for(j=0;j<width;j++)
+	{
+		a[0][j]=-1;
+		a[high-1][j]=-1;
+	}
+	a[high/2][width/2]=1;
+	for(i=1;i<=4;i++)
+	{
+		a[high/2][width/2-i]=i+1;
+	}
+	move=4;
+	 food_x=rand()%(high-5)+2;
+				  food_y=rand()%(width-5)+2;
+				  a[food_x][food_y]=-2;
+}
+
+void show()
+{
+	gotoxy(0,0);
+	int i,j;
+	for(i=0;i<high;i++)
+	{
+	for(j=0;j<width;j++)
+	{
+		if(a[i][j]==0)
+			printf(" ");
+		else if(a[i][j]==-1)	
+		      printf("#");
+		else if(a[i][j]==1)
+			printf("@");
+		else if(a[i][j]>1)
+			printf("*");
+		else if(a[i][j]==-2)
+			printf("o");
+	}
+	printf("\n");
+	}
+	Sleep(150);
+}
+void updateWithoutInput()
+{
+	 moveSnakeByDirection();
+}
+void updateWithIput()
+{char input;
+	if(kbhit())
+	{
+		input=getch();
+		if(input=='a')
+		{
+			move=3;
+            moveSnakeByDirection();
+        }
+		else if(input=='d')
+		{
+			move=4;
+            moveSnakeByDirection();
+        }
+		else if(input=='w')
+		{
+			move=1;
+            moveSnakeByDirection();
+        }
+		else if(input=='s')
+		{
+			move=2;
+            moveSnakeByDirection();
+        }
+	}
+
+}
+
+int main()
+{
+	int i,j;
+	startup();
+	
+	while(1)
+	{
+		show();
+		updateWithoutInput();
+		updateWithIput();
+	}
+	return 0;
+}
